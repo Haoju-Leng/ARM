@@ -4,13 +4,13 @@ from nesp_lib import Port, Pump, PumpingDirection
 import pandas as pd
 
 # communication commands setup
-setupPortValve = 'COM6'  # Communication port of the first valve
+#setupPortValve = 'COM13'  # Communication port of the first valve
 setupPortArm = 'COM14'
 ArmBaudRate = 19200
 ValveNB = ("a")  # List wich contains all the adress possible
-port = Port('COM7', baud_rate=19200)  # setup pump port
-pri_pump = Pump(port, address=0)  # setup perstaltic pump on address 0
-syr_pump_1 = Pump(port, address=1)  # setup syringe pump on address 1
+#port = Port('COM12', baud_rate=19200)  # setup pump port
+#pri_pump = Pump(port, address=0)  # setup perstaltic pump on address 0
+#syr_pump_1 = Pump(port, address=1)  # setup syringe pump on address 1
 
 
 # syr_pump_2 = Pump(port, address = 2) # setup syringe pump on address 1
@@ -31,6 +31,8 @@ def operation_function(H_input, PriP_direction, PriP_rate, PriP_volume, XY_valve
     pri_pump.pumping_rate = PriP_rate
     pri_pump.run()
 
+    # arm need to go home here
+
 
 class Arm:
     def __init__(self):
@@ -38,10 +40,10 @@ class Arm:
         self.baud_rate = ArmBaudRate
         # self.ValveState = {}  # Create a dictionnary
 
-    def OpenConnection(self):
+    def armOpenConnection(self):
         try:
             self.arm = serial.Serial(self.port, self.baud_rate)
-            self.arm.write("REMOTE\r".encode())
+            self.arm.write("REMOTE\r".encode()) # add RSVP
             self.arm.write("R1TYPE=3\r".encode())
             time.sleep(4)
         except AttributeError:
@@ -51,13 +53,15 @@ class Arm:
 
     def goTube(self, num):
         encodeStr = "TUBE=" + str(num) + ";RSVP\r"
+        self.arm.write("HOME\r".encode())
         self.arm.write(encodeStr.encode())
         ready = False
 
         # below is the test part that should be commented out after testing
+        readyStr = 'no'
         readyStr = self.arm.readline()
         print(readyStr)
-        if readyStr == "READY":
+        if not readyStr == "no":
             print('yes it is ready')
         else:
             print('no it is not ready')
@@ -69,7 +73,7 @@ class Arm:
         #     if readyStr == "READY":
         #         ready = True
 
-    def Valve(self, position):
+    def armValve(self, position):
         if position == 'waste':
             val = 0
         elif position == 'collect':
