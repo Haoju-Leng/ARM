@@ -4,11 +4,11 @@ from nesp_lib import Port, Pump, PumpingDirection
 import pandas as pd
 
 # communication commands setup
-setupPortValve = 'COM13'  # Communication port of the first valve
+setupPortValve = 'COM12'  # Communication port of the first valve
 setupPortArm = 'COM14'
 ArmBaudRate = 19200
 ValveNB = ("a")  # List wich contains all the adress possible
-port = Port('COM12', baud_rate=19200)  # setup pump port
+port = Port('COM13', baud_rate=19200)  # setup pump port
 pri_pump = Pump(port, address=0)  # setup perstaltic pump on address 0
 syr_pump_1 = Pump(port, address=1)  # setup syringe pump on address 1
 
@@ -45,7 +45,7 @@ class Arm:
 
     def armOpenConnection(self):
         try:
-            self.arm = serial.Serial(self.port, self.baud_rate)
+            self.arm = serial.Serial(self.port, baudrate=self.baud_rate)
             self.arm.write("REMOTE;RSVP\r".encode())
             start = time.time()
             ready = False
@@ -76,7 +76,7 @@ class Arm:
         except AttributeError:
             print("The port " + str(self.port) + "is already opened")
         except serial.SerialException:
-            print("Wrong port given, please check the file Config.py")
+            print("Wrong port given for arm, please check the file Config.py")
 
     def goTube(self, num):
         if num == -1:

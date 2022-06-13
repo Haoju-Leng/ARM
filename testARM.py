@@ -1,8 +1,7 @@
-from functions import Arm
+from define_operation_functions import *
+print('x')
+valve_startup()
+print('y')
+Take_Cell_Samples(1,9)
 
-arm = Arm()
-arm.OpenConnection()
 
-num = 1
-arm.goTube(num)
-arm.Valve('waste')

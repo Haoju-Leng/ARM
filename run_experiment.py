@@ -8,7 +8,7 @@ qunech_delay = 8 # min
 # system operations (no user input)
 quench_time_points = [x + qunech_delay for x in sampling_time_points]
 operation_table = generate_operation_table_optimized(biological_replica, sampling_time_points, quench_time_points, syr_pump_time)
-#experiment_preparation() # blocking and priming valves
+experiment_preparation() # blocking and priming valves
 valve_startup()
 run_experiment(operation_table)
 end_wash(biological_replica)
