@@ -4,13 +4,13 @@ from nesp_lib import Port, Pump, PumpingDirection
 import pandas as pd
 
 # communication commands setup
-#setupPortValve = 'COM13'  # Communication port of the first valve
+setupPortValve = 'COM13'  # Communication port of the first valve
 setupPortArm = 'COM14'
 ArmBaudRate = 19200
 ValveNB = ("a")  # List wich contains all the adress possible
-#port = Port('COM12', baud_rate=19200)  # setup pump port
-#pri_pump = Pump(port, address=0)  # setup perstaltic pump on address 0
-#syr_pump_1 = Pump(port, address=1)  # setup syringe pump on address 1
+port = Port('COM12', baud_rate=19200)  # setup pump port
+pri_pump = Pump(port, address=0)  # setup perstaltic pump on address 0
+syr_pump_1 = Pump(port, address=1)  # setup syringe pump on address 1
 
 
 # syr_pump_2 = Pump(port, address = 2) # setup syringe pump on address 1
@@ -23,6 +23,8 @@ def operation_function(H_input, PriP_direction, PriP_rate, PriP_volume, XY_valve
     # XY node states
     # use XY_sample (1 to 36) to set robot XY
     # PreP node states
+    arm.armValve(XY_valve)
+    arm.goTube(XY_sample)
     if PriP_direction == "INFUSE":
         pri_pump.pumping_direction = PumpingDirection.INFUSE
     elif PriP_direction == "WITHDRAW":
@@ -32,6 +34,7 @@ def operation_function(H_input, PriP_direction, PriP_rate, PriP_volume, XY_valve
     pri_pump.run()
 
     # arm need to go home here
+    arm.goHome()
 
 
 class Arm:
@@ -43,35 +46,57 @@ class Arm:
     def armOpenConnection(self):
         try:
             self.arm = serial.Serial(self.port, self.baud_rate)
-            self.arm.write("REMOTE\r".encode()) # add RSVP
-            self.arm.write("R1TYPE=3\r".encode())
-            time.sleep(4)
+            self.arm.write("REMOTE;RSVP\r".encode())
+            start = time.time()
+            ready = False
+            readyStr = 'tmp'
+
+            while not ready:
+                end = time.time()
+                if end - start > 10:
+                    raise Exception("REMOTE mode is not working, program exits")
+                readyStr = self.arm.readline()
+                if not readyStr == 'tmp':
+                    ready = True
+
+            self.arm.write("R1TYPE=3;RSVP\r".encode())
+
+            start = time.time()
+            ready = False
+            readyStr = 'tmp'
+
+            while not ready:
+                end = time.time()
+                if end - start > 10:
+                    raise Exception("Rack type cannot be set, program exits")
+                readyStr = self.arm.readline()
+                if not readyStr == 'tmp':
+                    ready = True
+
         except AttributeError:
             print("The port " + str(self.port) + "is already opened")
         except serial.SerialException:
             print("Wrong port given, please check the file Config.py")
 
     def goTube(self, num):
+        if num == -1:
+            return
+
         encodeStr = "TUBE=" + str(num) + ";RSVP\r"
-        self.arm.write("HOME\r".encode())
+        # self.arm.write("HOME\r".encode()) why???
         self.arm.write(encodeStr.encode())
+
+        start = time.time()
         ready = False
+        readyStr = 'tmp'
 
-        # below is the test part that should be commented out after testing
-        readyStr = 'no'
-        readyStr = self.arm.readline()
-        print(readyStr)
-        if not readyStr == "no":
-            print('yes it is ready')
-        else:
-            print('no it is not ready')
-
-        # below is the real code part
-
-        # while not ready:
-        #     readyStr = self.arm.readline()
-        #     if readyStr == "READY":
-        #         ready = True
+        while not ready:
+            end = time.time()
+            if end - start > 10:
+                raise Exception("goTube is not working, program exits")
+            readyStr = self.arm.readline()
+            if not readyStr == 'tmp':
+                ready = True
 
     def armValve(self, position):
         if position == 'waste':
@@ -84,12 +109,39 @@ class Arm:
 
         encodeStr = "VALVE=" + str(val) + ";RSVP\r"
         self.arm.write(encodeStr.encode())
+        start = time.time()
 
         ready = False
+        readyStr = 'tmp'
+
         while not ready:
+            end = time.time()
+            if end - start > 10:
+                raise Exception("Arm Valve is not working, program exits")
             readyStr = self.arm.readline()
-            if readyStr == "READY":
+            if not readyStr == 'tmp':
                 ready = True
+
+    def goHome(self):
+        encodeStr = "HOME;RSVP\r"
+        self.arm.write(encodeStr.encode())
+
+        start = time.time()
+        ready = False
+        readyStr = 'tmp'
+
+        while not ready:
+            end = time.time()
+            if end - start > 10:
+                raise Exception("goTube is not working, program exits")
+            readyStr = self.arm.readline()
+            if not readyStr == 'tmp':
+                ready = True
+
+
+arm = Arm()
+arm.armOpenConnection()
+
 
 def valve_startup():
     NbofValve = 1  # Nb of valve in series
