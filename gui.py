@@ -2,7 +2,6 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter.messagebox import showerror, showinfo
 import define_operation_functions
-import Operations
 import run_experiment
 import serial
 
@@ -138,7 +137,7 @@ valve_start_button.configure(command=valve_start_clicked)
 
 def run_experiment_clicked():
     if gdv.get():
-        gdv_input = int(gdv.get())  # TODO: float or int
+        gdv_input = int(gdv.get())  # TODO:  int
         define_operation_functions.gDV = gdv_input
 
     if ydv.get():

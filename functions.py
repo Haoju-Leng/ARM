@@ -8,15 +8,15 @@ setupPortValve = 'COM12'  # Communication port of the first valve
 setupPortArm = 'COM14'
 ArmBaudRate = 19200
 ValveNB = ("a")  # List wich contains all the adress possible
-<<<<<<< HEAD
+#<<<<<<< HEAD
 # port = Port('COM12', baud_rate=19200)  # setup pump port
 # pri_pump = Pump(port, address=0)  # setup perstaltic pump on address 0
 # syr_pump_1 = Pump(port, address=1)  # setup syringe pump on address 1
-=======
+#=======
 port = Port('COM13', baud_rate=19200)  # setup pump port
 pri_pump = Pump(port, address=0)  # setup perstaltic pump on address 0
 syr_pump_1 = Pump(port, address=1)  # setup syringe pump on address 1
->>>>>>> 95382e5bf29c993fb45ff6be12e05ee463a8fdb7
+#>>>>>>> 95382e5bf29c993fb45ff6be12e05ee463a8fdb7
 
 
 # syr_pump_2 = Pump(port, address = 2) # setup syringe pump on address 1
@@ -82,11 +82,11 @@ class Arm:
         except AttributeError:
             print("The port " + str(self.port) + "is already opened")
         except serial.SerialException:
-<<<<<<< HEAD
+#<<<<<<< HEAD
             print("Wrong port given, please check the file Config.py2")
-=======
+#=======
             print("Wrong port given for arm, please check the file Config.py")
->>>>>>> 95382e5bf29c993fb45ff6be12e05ee463a8fdb7
+#>>>>>>> 95382e5bf29c993fb45ff6be12e05ee463a8fdb7
 
     def goTube(self, num):
         if num == -1:
@@ -149,8 +149,8 @@ class Arm:
                 ready = True
 
 
-# arm = Arm()
-# arm.armOpenConnection()
+arm = Arm()
+arm.armOpenConnection()
 
 
 def valve_startup():
