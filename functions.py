@@ -13,9 +13,9 @@ ValveNB = ("a")  # List wich contains all the adress possible
 # pri_pump = Pump(port, address=0)  # setup perstaltic pump on address 0
 # syr_pump_1 = Pump(port, address=1)  # setup syringe pump on address 1
 #=======
-port = Port('COM13', baud_rate=19200)  # setup pump port
-pri_pump = Pump(port, address=0)  # setup perstaltic pump on address 0
-syr_pump_1 = Pump(port, address=1)  # setup syringe pump on address 1
+#port = Port('COM13', baud_rate=19200)  # setup pump port
+#pri_pump = Pump(port, address=0)  # setup perstaltic pump on address 0
+#syr_pump_1 = Pump(port, address=1)  # setup syringe pump on address 1
 #>>>>>>> 95382e5bf29c993fb45ff6be12e05ee463a8fdb7
 
 
